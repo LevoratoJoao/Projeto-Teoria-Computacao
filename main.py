@@ -1,24 +1,19 @@
 import csv
 import sys
 
-import networkx as nx # pip install networkx
-import matplotlib.pyplot as plt # pip install matplotlib
-
-# https://networkx.org/documentation/stable/tutorial.html#drawing-graphs
-
 def lerArquivo(title):
     try:
-        with open(f"{title}.csv") as file:
+        with open(f"{title}") as file:
             content = csv.reader(file, delimiter=';')
             data = list(content)
         return data
     except FileNotFoundError:
         return None
 
-def criaGrafo(automato):
+def criarGrafo(automato):
     grafo = {}
     for item in automato:
-        origem, destino, peso = item[0], item[1], int(item[2])
+        origem, destino, peso = item[0], item[1], item[2]
         # Se o vértice de origem não está no grafo, adiciona ele
         if origem not in grafo:
             grafo[origem] = {}
@@ -26,44 +21,46 @@ def criaGrafo(automato):
         grafo[origem][destino] = peso
     return grafo
 
-def buscaEmProfundidade(grafo, origem):
+def buscaEmProfundidade(grafo, origem, destino):
     # Pilha para o DFS
     pilha = [(origem, [origem])] # lista que contem uma tupla com a origem e uma lista dos caminhos (começa na origem)
+    visitados = []
     while pilha:
-        # Pega o automato atual e o proximo automato
+        # Pega o automato atual e o caminho
         (vertice, caminho) = pilha.pop()
-        # Para cada vizinho do automato atual no grafo
-        for vizinho in grafo[vertice]:
-            # Se a transição for -1
-            if grafo[vertice][vizinho] == -1:
-                # Se o vizinho é o automato final, retorna o caminho
-                if 'qF' in vizinho:
-                    return caminho + [vizinho]
-                else:
-                    # adiciona à pilha o vizinho (proximo a ser percorrido) e atualização do caminho
-                    pilha.append((vizinho, caminho + [vizinho]))
-    # Se não encontrar um caminho, retorna None
+        if vertice not in visitados:
+            visitados.append(vertice)
+            # Para cada vizinho do automato atual no grafo
+            for vizinho in grafo[vertice]:
+                if grafo[vertice][vizinho] == '&':
+                    if destino in vizinho:
+                        return caminho + [vizinho]
+                    else:
+                        # adiciona à pilha o vizinho (proximo a ser percorrido) e atualização do caminho
+                        pilha.append((vizinho, caminho + [vizinho]))
     return None
+
+def mostrarGrafo(grafo):
+    for vertice, arestas in grafo.items():
+        for destino, peso in arestas.items():
+            print(f"{vertice} -> {peso} -> {destino}")
 
 if __name__ == '__main__':
     automatos = lerArquivo(sys.argv[1])
-    grafo = criaGrafo(automatos)
+    grafo = criarGrafo(automatos)
 
     automatoInicial = sys.argv[2]
+    automatoFinal = sys.argv[3]
 
-    caminho = buscaEmProfundidade(grafo, automatoInicial)
+    if automatoFinal == automatoInicial:
+        print(f"O automato inserido gera palavra vazia\nCaminho da palavra vazia: ['{automatoInicial}', '{automatoFinal}']")
+        sys.exit()
+
+    mostrarGrafo(grafo)
+
+    caminho = buscaEmProfundidade(grafo, automatoInicial, automatoFinal)
 
     if caminho is not None:
-        print(f"O automato inserido gera palavra vazia\nCaminho: {caminho}")
+        print(f"O automato inserido gera palavra vazia\nCaminho da palavra vazia: {caminho}")
     else:
         print(f"O automato inserido não gera palavra vazia")
-
-    DG = nx.DiGraph()
-    DG.add_weighted_edges_from(automatos)
-
-    plt.figure()
-    pos = nx.shell_layout(DG) # planar_layout
-    weight_labels = nx.get_edge_attributes(DG,'weight')
-    nx.draw(DG,pos,with_labels = True,)
-    nx.draw_networkx_edge_labels(DG,pos,edge_labels=weight_labels)
-    plt.show()
