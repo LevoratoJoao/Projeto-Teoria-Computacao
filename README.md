@@ -22,4 +22,4 @@ Fazemos a execução da função enquanto a pilha tiver valores, dentro do while
 
 Após isso fazemos um for para percorrer os vertices adjacentes ao vertice atual, se a transição do atual para o vizinho for igual a & (transição vazia) verificamos se o vizinho é um estado final, se for atualizamos o caminho e retornamos ele, caso contrario, adicionamos o vizinho e a atualização do caminho à pilha e percorremos de novo. Caso a transição não seja & nós continuamos percorrendo os vizinhos, se nenhum deles tiver transição vazia nenhum valor novo é adicionado a pilha e o while termina.
 
-Se o retorno da função for ```None``` o automato não gera palavra vazia, caso contrario ele gera e mostra o caminho percorrido.
+Se o retorno da função for ```None``` o automato não reconhece palavra vazia, caso contrario ele reconhece e mostra o caminho percorrido.
