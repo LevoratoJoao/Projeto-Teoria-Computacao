@@ -52,15 +52,15 @@ if __name__ == '__main__':
     automatoInicial = sys.argv[2]
     automatoFinal = sys.argv[3]
 
-    if automatoFinal == automatoInicial:
-        print(f"O automato inserido gera palavra vazia\nCaminho da palavra vazia: ['{automatoInicial}', '{automatoFinal}']")
-        sys.exit()
-
     mostrarGrafo(grafo)
+    
+    if automatoFinal == automatoInicial:
+        print(f"O automato inserido reconhece palavra vazia\nCaminho da palavra vazia: ['{automatoInicial}', '{automatoFinal}']")
+        sys.exit()
 
     caminho = buscaEmProfundidade(grafo, automatoInicial, automatoFinal)
 
     if caminho is not None:
-        print(f"O automato inserido gera palavra vazia\nCaminho da palavra vazia: {caminho}")
+        print(f"O automato inserido reconhece palavra vazia\nCaminho da palavra vazia: {caminho}")
     else:
-        print(f"O automato inserido não gera palavra vazia")
+        print(f"O automato inserido reconhece gera palavra vazia")
